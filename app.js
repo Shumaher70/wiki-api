@@ -23,7 +23,7 @@ const Article = new mongoose.model("Article", articleSchema);
 // ////////////////////////////////////////////Requests Targetting all Articles////////////////////////////////////
 app.route('/articles')
 
-.get((req,res)=>{
+.get((req, res)=>{
 
     Article.find()
     .then(foundArticles=> res.send(foundArticles))
@@ -31,7 +31,7 @@ app.route('/articles')
 
 })
 
-.post((req,res)=>{
+.post((req, res)=>{
 
     const newArticle = new Article({
         title: req.body.title,
@@ -42,7 +42,7 @@ app.route('/articles')
 
 })
 
-.delete((req,res)=>{
+.delete((req, res)=>{
 
     Article.deleteMany()
     .then(res.send('Successfully deleted all articles'))
@@ -54,11 +54,34 @@ app.route('/articles')
 
 app.route('/articles/:articleTile')
 
-.get((req,res)=>{
+.get((req, res)=>{
    Article.findOne({title: req.params.articleTile}) 
    .then(foundArticle => res.send(foundArticle == null? 'No articles matching tat title was found.': foundArticle))
-   .catch('something err')
-});
+   .catch('something err');
+})
+
+.put((req, res)=>{
+    Article.updateMany(
+        {title: req.params.articleTile},
+        {title: req.body.title, content: req.body.content},
+        {ovrewrite: true})
+    .then(res.send('successfully'))
+    .catch(res.send('some kind of mistake, the provider is solving it now'));
+})
+.patch((req, res)=>{
+    Article.updateMany(
+        {title: req.params.articleTile},
+        {$set: req.body}
+    )
+    .then(res.send('succsesfully Update Article.'))
+    .catch(res.send('some kind of mistake, the provider is solving it now'));
+})
+.delete((req, res)=>{
+    console.log(req.params.articleTile);
+    Article.deleteMany({title: req.params.articleTile})
+    .then(res.send('successfully deleted'))
+    .catch(res.send('something workng'));
+})
 
 
 app.listen(3000, function() {
